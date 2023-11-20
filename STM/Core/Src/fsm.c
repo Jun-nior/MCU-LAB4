@@ -27,6 +27,20 @@ void clear_buffer() {
 	index_buffer=0;
 }
 
+int compare_RST() {
+	if (buffer[0]=='R' && buffer[1] == 'S' && buffer[2]=='T' && buffer[3]=='#') {
+		return 1;
+	}
+	return 0;
+}
+
+int compare_OK() {
+	if (buffer[0]=='O' && buffer[1]=='K' && buffer[2]=='#') {
+		return 1;
+	}
+	return 0;
+}
+
 void command_parser_fsm() {
 	switch(state) {
 	case IDLE:
@@ -36,14 +50,14 @@ void command_parser_fsm() {
 		}
 		break;
 	case RECEIVE:
-		if (!strcmp(buffer,"RST#")) {
+		if (compare_RST()) {
 			command_flag=1;
 			HAL_ADC_Start(&hadc1);
 			ADC_value=HAL_ADC_GetValue(&hadc1);
 			HAL_ADC_Stop(&hadc1);
 			state=IDLE;
 			clear_buffer();
-		} else if (!strcmp(buffer,"OK#")) {
+		} else if (compare_OK()) {
 			command_flag=0;
 			state=IDLE;
 			clear_buffer();
